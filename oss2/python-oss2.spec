@@ -18,6 +18,7 @@ BuildRequires:  python3dist(aliyun-python-sdk-kms) >= 2.4.1
 BuildRequires:  python3dist(crcmod) >= 1.7
 BuildRequires:  python3dist(pycryptodome) >= 3.4.7
 BuildRequires:  python3dist(setuptools)
+BuildRequires:  python3dist(six)
 
 %description
 Alibaba Cloud OSS SDK for Python README of Chinese < Alibaba Cloud Object
