@@ -19,6 +19,7 @@ BuildRequires:  python3dist(crcmod) >= 1.7
 BuildRequires:  python3dist(pycryptodome) >= 3.4.7
 BuildRequires:  python3dist(setuptools)
 BuildRequires:  python3dist(six)
+BuildRequires:  python3dist(mock)
 
 %description
 Alibaba Cloud OSS SDK for Python README of Chinese < Alibaba Cloud Object
