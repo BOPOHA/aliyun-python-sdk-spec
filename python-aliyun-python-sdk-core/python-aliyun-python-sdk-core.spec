@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        2.13.16
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        The core module of Aliyun Python SDK
 
 License:        Apache License 2.0
@@ -27,7 +27,7 @@ Summary:        %{summary}
 Requires:       python3dist(jmespath) < 1.0.0
 Requires:       python3dist(jmespath) >= 0.9.3
 Requires:       python3dist(pycryptodome) >= 3.4.7
-Provides:       python3dist(%{pypi_name}-v3)
+Provides:       %{py3_dist aliyun-python-sdk-core-v3}
 
 %description -n python3-%{pypi_name}
  aliyun-python-sdk-core This is the core module of Aliyun Python SDK.Aliyun
