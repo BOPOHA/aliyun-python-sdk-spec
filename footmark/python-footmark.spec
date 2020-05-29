@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.20.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Python interface to Aliyun Web Services
 
 License:        MIT
@@ -20,7 +20,11 @@ BuildRequires:  python3dist(aliyun-python-sdk-market) >= 2.0.24
 BuildRequires:  python3dist(aliyun-python-sdk-oos) >= 1.1.0
 BuildRequires:  python3dist(aliyun-python-sdk-ram) >= 3.1.0
 BuildRequires:  python3dist(aliyun-python-sdk-rds) >= 2.1.0
+%if 0%{?fedora} >= 31
+BuildRequires:  python3dist(aliyun-python-sdk-ros) = 3.2
+%else
 BuildRequires:  python3dist(aliyun-python-sdk-ros) = 3.2.0
+%endif
 BuildRequires:  python3dist(aliyun-python-sdk-slb) >= 3.2.16
 BuildRequires:  python3dist(aliyun-python-sdk-sts) >= 2.1.7
 BuildRequires:  python3dist(aliyun-python-sdk-vpc) >= 3.0.7
@@ -44,7 +48,11 @@ Requires:       python3dist(aliyun-python-sdk-market) >= 2.0.24
 Requires:       python3dist(aliyun-python-sdk-oos) >= 1.1.0
 Requires:       python3dist(aliyun-python-sdk-ram) >= 3.1.0
 Requires:       python3dist(aliyun-python-sdk-rds) >= 2.1.0
+%if 0%{?fedora} >= 31
+Requires:       python3dist(aliyun-python-sdk-ros) = 3.2
+%else
 Requires:       python3dist(aliyun-python-sdk-ros) = 3.2.0
+%endif
 Requires:       python3dist(aliyun-python-sdk-slb) >= 3.2.16
 Requires:       python3dist(aliyun-python-sdk-sts) >= 2.1.7
 Requires:       python3dist(aliyun-python-sdk-vpc) >= 3.0.7
