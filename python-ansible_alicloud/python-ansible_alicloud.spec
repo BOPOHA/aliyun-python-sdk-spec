@@ -23,10 +23,8 @@ Summary:        %{summary}
  
 Requires:       python3dist(ansible)
 %if 0%{?fedora} >= 31
-Requires:       python3dist(ansible-alicloud-module-utils) >= 1.5
 Requires:       python3dist(footmark) >= 1.20
 %else
-Requires:       python3dist(ansible-alicloud-module-utils) >= 1.5.0
 Requires:       python3dist(footmark) >= 1.20.0
 %endif
 %description -n python3-%{pypi_name}
