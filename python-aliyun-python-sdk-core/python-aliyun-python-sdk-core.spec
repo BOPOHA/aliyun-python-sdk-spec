@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        2.13.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The core module of Aliyun Python SDK
 
 License:        Apache License 2.0
@@ -11,7 +11,7 @@ URL:            https://github.com/aliyun/aliyun-openapi-python-sdk
 Source0:        https://files.pythonhosted.org/packages/source/a/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
 
-Provides:       python3dist(%{pypi_name}-v3)
+Provides:       python3dist(aliyun-python-sdk-core-v3)
 BuildRequires:  python3-devel
 BuildRequires:  python3dist(setuptools)
 
