@@ -5,7 +5,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.19.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Ansible provider for Alicloud
 
 License:        MIT
@@ -58,7 +58,7 @@ rm lib/ansible/modules/cloud/__init__.py
 %exclude %{python3_sitelib}/ansible/__pycache__
 %exclude %{python3_sitelib}/ansible/modules/__pycache__
 %exclude %{python3_sitelib}/ansible/modules/cloud/alicloud/__pycache__
-%exclude %{python3_sitelib}/ansible/util/__pycache__
+%exclude %{python3_sitelib}/ansible/utils/__pycache__
 
 %changelog
 * Wed May 27 2020 mockbuilder - 1.19.0-1
