@@ -13,7 +13,7 @@ BuildArch:      noarch
  
 BuildRequires:  python3-devel
 BuildConflicts: python3dist(requests) = 2.9.0
-BuildRequires:  python3dist(aliyun-python-sdk-core) >= 2.5.5
+BuildRequires:  python3dist(aliyun-python-sdk-core-v3) >= 2.5.5
 BuildRequires:  python3dist(aliyun-python-sdk-kms) >= 2.4.1
 BuildRequires:  python3dist(crcmod) >= 1.7
 BuildRequires:  python3dist(pycryptodome) >= 3.4.7
@@ -28,9 +28,9 @@ versions.
 %package -n     python3-%{pypi_name}
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
- 
+
 Conflicts:      python3dist(requests) = 2.9.0
-Requires:       python3dist(aliyun-python-sdk-core) >= 2.5.5
+Requires:       python3dist(aliyun-python-sdk-core-v3) >= 2.5.5
 Requires:       python3dist(aliyun-python-sdk-kms) >= 2.4.1
 Requires:       python3dist(crcmod) >= 1.7
 Requires:       python3dist(pycryptodome) >= 3.4.7
