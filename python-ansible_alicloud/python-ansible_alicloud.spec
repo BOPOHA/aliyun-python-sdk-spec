@@ -1,11 +1,11 @@
 # Created by pyp2rpm-3.3.2
 %global pypi_name ansible_alicloud
 # Turn off the brp-python-bytecompile automagic
-%global _python_bytecompile_extra 0
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
 
 Name:           python-%{pypi_name}
 Version:        1.19.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Ansible provider for Alicloud
 
 License:        MIT
