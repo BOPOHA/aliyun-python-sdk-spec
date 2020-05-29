@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        2.11.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Aliyun OSS (Object Storage Service) SDK
 
 License:        None
@@ -45,7 +45,7 @@ versions.
 %autosetup -n %{pypi_name}-%{version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
-sed "s/aliyun-python-sdk-core-v3/aliyun-python-sdk-core/" setup.py
+sed -i "s/aliyun-python-sdk-core-v3/aliyun-python-sdk-core/" setup.py
 
 %build
 %py3_build
