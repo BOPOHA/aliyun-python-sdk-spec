@@ -1,9 +1,11 @@
 # Created by pyp2rpm-3.3.2
 %global pypi_name ansible_alicloud
+# Turn off the brp-python-bytecompile automagic
+%global _python_bytecompile_extra 0
 
 Name:           python-%{pypi_name}
 Version:        1.19.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Ansible provider for Alicloud
 
 License:        MIT
@@ -36,6 +38,7 @@ Requires:       python3dist(footmark) >= 1.20.0
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 sed -i /install_requires=/d setup.py
+rm lib/ansible/module_utils/__init__.py
 rm lib/ansible/module_utils/alicloud_ecs.py
 rm lib/ansible/modules/cloud/alicloud/_ali_instance_facts.py
 rm lib/ansible/modules/cloud/alicloud/ali_instance_info.py
