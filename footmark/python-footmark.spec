@@ -26,7 +26,7 @@ BuildRequires:  python3dist(aliyun-python-sdk-sts) >= 2.1.7
 BuildRequires:  python3dist(aliyun-python-sdk-vpc) >= 3.0.7
 BuildRequires:  python3dist(oss2) >= 2.3.3
 BuildRequires:  python3dist(setuptools)
-BuildRequires:  python3dist(yaml)
+BuildRequires:  python3dist(pyyaml)
 BuildRequires:  python3dist(six)
 
 %description
