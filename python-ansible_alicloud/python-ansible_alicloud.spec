@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Ansible provider for Alicloud
 
 License:        MIT
@@ -22,8 +22,13 @@ Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
  
 Requires:       python3dist(ansible)
+%if 0%{?fedora} >= 31
+Requires:       python3dist(ansible-alicloud-module-utils) >= 1.5
+Requires:       python3dist(footmark) >= 1.20
+%else
 Requires:       python3dist(ansible-alicloud-module-utils) >= 1.5.0
 Requires:       python3dist(footmark) >= 1.20.0
+%endif
 %description -n python3-%{pypi_name}
 
 
