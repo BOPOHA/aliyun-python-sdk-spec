@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.19.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Ansible provider for Alicloud
 
 License:        MIT
@@ -35,6 +35,7 @@ Requires:       python3dist(footmark) >= 1.20.0
 %autosetup -n %{pypi_name}-%{version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
+sed -i /install_requires=/d setup.py
 
 %build
 %py3_build
