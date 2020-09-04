@@ -22,8 +22,8 @@ BuildRequires:  python3dist(setuptools)
 %package -n     python3-%{pypi_name}
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
- 
-Requires:       python3dist(ansible)
+
+Requires:       python3dist(ansible)  == 2.9.13
 %if 0%{?fedora} >= 31
 Requires:       python3dist(footmark) >= 1.20
 %else

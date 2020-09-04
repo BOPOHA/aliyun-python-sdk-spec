@@ -18,7 +18,7 @@
 Name: ansible
 Summary: SSH-based configuration management, deployment, and task execution system
 Version: 2.9.13
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 License: GPLv3+
 Source0: https://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
@@ -133,10 +133,13 @@ This package installs extensive documentation for ansible
 cp -a %{S:1} %{S:2} %{S:3} .
 
 # this files will be provides by ansible_alicloud package
+sed -i  's#, "ali_instance_info.py": \["ansible/modules/cloud/alicloud/_ali_instance_facts.py"\]##' SYMLINK_CACHE.json
 rm lib/ansible/module_utils/alicloud_ecs.py
+rm lib/ansible/modules/cloud/alicloud/__init__.py
 rm lib/ansible/modules/cloud/alicloud/_ali_instance_facts.py
 rm lib/ansible/modules/cloud/alicloud/ali_instance_info.py
 rm lib/ansible/modules/cloud/alicloud/ali_instance.py
+rm lib/ansible/plugins/doc_fragments/alicloud.py
 
 
 %build
