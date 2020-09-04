@@ -5,7 +5,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.19.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Ansible provider for Alicloud
 
 License:        MIT
@@ -39,10 +39,6 @@ Requires:       python3dist(footmark) >= 1.20.0
 rm -rf %{pypi_name}.egg-info
 sed -i /install_requires=/d setup.py
 rm lib/ansible/module_utils/__init__.py
-rm lib/ansible/module_utils/alicloud_ecs.py
-rm lib/ansible/modules/cloud/alicloud/_ali_instance_facts.py
-rm lib/ansible/modules/cloud/alicloud/ali_instance_info.py
-rm lib/ansible/modules/cloud/alicloud/ali_instance.py
 rm lib/ansible/modules/cloud/__init__.py
 
 %build
