@@ -13,7 +13,7 @@ URL:            https://github.com/alibaba/ansible-provider/tree/master/lib/ansi
 Source0:        %{pypi_source}
 # Patch1 contains 4 commits: 1cdc6d91201d8cf76e05dc7eca2a6f79454c7ae9, 6282147352879be72474cd7194ce5ddccf248677,
 #                            66817356490ccf2cefbf8c64c16ea3301ffe2e41, 76f77264fa7a978b0a5fbad34139e15862b0048f
-Patch1:         https://raw.githubusercontent.com/BOPOHA/aliyun-python-sdk-spec/develop/python-ansible_alicloud/279.merged.patch
+Patch1:         https://raw.githubusercontent.com/BOPOHA/aliyun-python-sdk-spec/master/python-ansible_alicloud/279.merged.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
@@ -60,7 +60,7 @@ rm lib/ansible/modules/cloud/__init__.py
 %exclude %{python3_sitelib}/ansible/utils/__pycache__
 
 %changelog
-* Wed Nov 25 2020 Anatolii Vorona <vorona@alarstudios.com> - 1.19.0-10
+* Wed Nov 25 2020 Anatolii Vorona <vorona.tolik@gmail.com> - 1.19.0-10
 - Update ansible up to 2.9.15. Added patch for ECS facts fix.
 
 * Wed May 27 2020 mockbuilder - 1.19.0-1
