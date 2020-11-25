@@ -2,7 +2,7 @@
 +++ b/lib/ansible/modules/cloud/alicloud/ali_instance.py
 @@ -610,6 +610,7 @@
  '''
- 
+
  import re
 +from ast import literal_eval
  import time
@@ -25,7 +25,7 @@
      # check whether the required parameter passed or not
      if not image_id:
          module.fail_json(msg='image_id is required for new instance')
-@@ -691,7 +703,9 @@
+@@ -691,7 +702,9 @@
                                        amount=exact_count, instance_charge_type=instance_charge_type, period=period, period_unit="Month",
                                        auto_renew=auto_renew, auto_renew_period=auto_renew_period, key_pair_name=key_name,
                                        user_data=user_data, client_token=client_token, ram_role_name=ram_role_name,
@@ -33,10 +33,10 @@
 +                                      spot_price_limit=spot_price_limit, spot_strategy=spot_strategy, unique_suffix=unique_suffix,
 +                                      tags=merged_tags)
 +
- 
+
      except Exception as e:
          module.fail_json(msg='Unable to create instance, error: {0}'.format(e))
-@@ -830,7 +844,7 @@
+@@ -830,7 +843,7 @@
              module.fail_json(msg="There are no instances in our record based on instance_ids {0}. "
                                   "Please check it and try again.".format(instance_ids))
      elif count_tag:
@@ -44,17 +44,17 @@
 +        instances = ecs.describe_instances(zone_id=zone_id, tags=literal_eval(count_tag))
      elif instance_name:
          instances = ecs.describe_instances(zone_id=zone_id, instance_name=instance_name)
- 
-@@ -853,7 +867,7 @@
+
+@@ -853,7 +866,7 @@
          except Exception as e:
              module.fail_json(msg='Delete instance got an error: {0}'.format(e))
- 
+
 -    if module.params['allocate_public_ip'] and max_bandwidth_out < 0:
 +    if module.params['allocate_public_ip'] and max_bandwidth_out <= 0:
          module.fail_json(msg="'max_bandwidth_out' should be greater than 0 when 'allocate_public_ip' is True.")
      if not module.params['allocate_public_ip']:
          module.params['max_bandwidth_out'] = 0
-@@ -874,7 +888,7 @@
+@@ -874,7 +887,7 @@
                      instances.pop(len(instances) - 1)
              else:
                  try:
@@ -63,9 +63,9 @@
                          module.fail_json(msg='Ordered hostname is not supported, If you want to add an ordered '
                                               'suffix to the hostname, you can set unique_suffix to True')
                      new_instances = run_instance(module, ecs, count - len(instances))
-@@ -902,16 +916,16 @@
+@@ -902,16 +915,16 @@
          # Security Group join/leave ends here
- 
+
          # Attach/Detach key pair
 -        inst_ids = []
 +        keypair_ids = []
@@ -81,12 +81,12 @@
 +                    keypair_ids.append(inst.id)
 +        if keypair_ids:
 +            changed = ecs.attach_key_pair(instance_ids=keypair_ids, key_pair_name=key_name)
- 
+
          # Modify instance attribute
          for inst in instances:
-@@ -921,12 +935,12 @@
+@@ -921,12 +934,12 @@
                  ids.append(inst.id)
- 
+
          # Modify instance charge type
 -        ids = []
 +        charge_type_ids = []
@@ -101,8 +101,8 @@
                        "include_data_disks": module.params['include_data_disks'], "dry_run": module.params['dry_run'],
                        "auto_pay": True}
              if instance_charge_type == 'PrePaid':
-@@ -935,7 +949,7 @@
- 
+@@ -935,7 +948,7 @@
+
              if ecs.modify_instance_charge_type(**params):
                  changed = True
 -                wait_for_instance_modify_charge(ecs, ids, instance_charge_type)
