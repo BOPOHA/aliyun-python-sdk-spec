@@ -37,7 +37,7 @@ Requires:       python3dist(footmark) >= 1.20.0
 
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -p1 -n %{pypi_name}-%{version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 sed -i /install_requires=/d setup.py
