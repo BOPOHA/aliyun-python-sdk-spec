@@ -8,7 +8,7 @@
  import time
  import traceback
  from ansible.module_utils.basic import AnsibleModule, missing_required_lib
-@@ -667,6 +668,17 @@
+@@ -667,6 +668,16 @@
      spot_price_limit = module.params['spot_price_limit']
      spot_strategy = module.params['spot_strategy']
      unique_suffix = module.params['unique_suffix']
