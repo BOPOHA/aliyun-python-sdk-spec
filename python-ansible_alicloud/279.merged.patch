@@ -1,0 +1,112 @@
+--- a/lib/ansible/modules/cloud/alicloud/ali_instance.py
++++ b/lib/ansible/modules/cloud/alicloud/ali_instance.py
+@@ -610,6 +610,7 @@
+ '''
+
+ import re
++from ast import literal_eval
+ import time
+ import traceback
+ from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+@@ -667,6 +668,16 @@
+     spot_price_limit = module.params['spot_price_limit']
+     spot_strategy = module.params['spot_strategy']
+     unique_suffix = module.params['unique_suffix']
++    count_tag = module.params['count_tag']
++    tags = module.params['tags']
++
++    merged_tags = {}
++    if tags:
++        merged_tags = tags
++
++    if literal_eval(count_tag):
++        merged_tags.update(literal_eval(count_tag))
++
+     # check whether the required parameter passed or not
+     if not image_id:
+         module.fail_json(msg='image_id is required for new instance')
+@@ -691,7 +702,9 @@
+                                       amount=exact_count, instance_charge_type=instance_charge_type, period=period, period_unit="Month",
+                                       auto_renew=auto_renew, auto_renew_period=auto_renew_period, key_pair_name=key_name,
+                                       user_data=user_data, client_token=client_token, ram_role_name=ram_role_name,
+-                                      spot_price_limit=spot_price_limit, spot_strategy=spot_strategy, unique_suffix=unique_suffix)
++                                      spot_price_limit=spot_price_limit, spot_strategy=spot_strategy, unique_suffix=unique_suffix,
++                                      tags=merged_tags)
++
+
+     except Exception as e:
+         module.fail_json(msg='Unable to create instance, error: {0}'.format(e))
+@@ -830,7 +843,7 @@
+             module.fail_json(msg="There are no instances in our record based on instance_ids {0}. "
+                                  "Please check it and try again.".format(instance_ids))
+     elif count_tag:
+-        instances = ecs.describe_instances(zone_id=zone_id, tags=eval(count_tag))
++        instances = ecs.describe_instances(zone_id=zone_id, tags=literal_eval(count_tag))
+     elif instance_name:
+         instances = ecs.describe_instances(zone_id=zone_id, instance_name=instance_name)
+
+@@ -853,7 +866,7 @@
+         except Exception as e:
+             module.fail_json(msg='Delete instance got an error: {0}'.format(e))
+
+-    if module.params['allocate_public_ip'] and max_bandwidth_out < 0:
++    if module.params['allocate_public_ip'] and max_bandwidth_out <= 0:
+         module.fail_json(msg="'max_bandwidth_out' should be greater than 0 when 'allocate_public_ip' is True.")
+     if not module.params['allocate_public_ip']:
+         module.params['max_bandwidth_out'] = 0
+@@ -874,7 +887,7 @@
+                     instances.pop(len(instances) - 1)
+             else:
+                 try:
+-                    if re.search(r"-\[\d+,\d+\]-", host_name):
++                    if host_name and re.search(r"-\[\d+,\d+\]-", host_name):
+                         module.fail_json(msg='Ordered hostname is not supported, If you want to add an ordered '
+                                              'suffix to the hostname, you can set unique_suffix to True')
+                     new_instances = run_instance(module, ecs, count - len(instances))
+@@ -902,16 +915,16 @@
+         # Security Group join/leave ends here
+
+         # Attach/Detach key pair
+-        inst_ids = []
++        keypair_ids = []
+         for inst in instances:
+             if key_name is not None and key_name != inst.key_name:
+                 if key_name == "":
+                     if inst.detach_key_pair():
+                         changed = True
+                 else:
+-                    inst_ids.append(inst.id)
+-        if inst_ids:
+-            changed = ecs.attach_key_pair(instance_ids=inst_ids, key_pair_name=key_name)
++                    keypair_ids.append(inst.id)
++        if keypair_ids:
++            changed = ecs.attach_key_pair(instance_ids=keypair_ids, key_pair_name=key_name)
+
+         # Modify instance attribute
+         for inst in instances:
+@@ -921,12 +934,12 @@
+                 ids.append(inst.id)
+
+         # Modify instance charge type
+-        ids = []
++        charge_type_ids = []
+         for inst in instances:
+             if inst.instance_charge_type != instance_charge_type:
+-                ids.append(inst.id)
+-        if ids:
+-            params = {"instance_ids": ids, "instance_charge_type": instance_charge_type,
++                charge_type_ids.append(inst.id)
++        if charge_type_ids:
++            params = {"instance_ids": charge_type_ids, "instance_charge_type": instance_charge_type,
+                       "include_data_disks": module.params['include_data_disks'], "dry_run": module.params['dry_run'],
+                       "auto_pay": True}
+             if instance_charge_type == 'PrePaid':
+@@ -935,7 +948,7 @@
+
+             if ecs.modify_instance_charge_type(**params):
+                 changed = True
+-                wait_for_instance_modify_charge(ecs, ids, instance_charge_type)
++                wait_for_instance_modify_charge(ecs, charge_type_ids, instance_charge_type)
+ 
+     else:
+         if len(instances) < 1:
