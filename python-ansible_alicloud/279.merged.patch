@@ -1,37 +1,3 @@
-From 1cdc6d91201d8cf76e05dc7eca2a6f79454c7ae9 Mon Sep 17 00:00:00 2001
-From: Yang Liu <liuyangc3@gmail.com>
-Date: Fri, 19 Jun 2020 17:04:52 +0800
-Subject: [PATCH 1/4] fix #233
-
----
- lib/ansible/modules/cloud/alicloud/ali_instance.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/lib/ansible/modules/cloud/alicloud/ali_instance.py b/lib/ansible/modules/cloud/alicloud/ali_instance.py
-index 5f7f9d7..d33c671 100644
---- a/lib/ansible/modules/cloud/alicloud/ali_instance.py
-+++ b/lib/ansible/modules/cloud/alicloud/ali_instance.py
-@@ -874,7 +874,7 @@ def main():
-                     instances.pop(len(instances) - 1)
-             else:
-                 try:
--                    if re.search(r"-\[\d+,\d+\]-", host_name):
-+                    if host_name and re.search(r"-\[\d+,\d+\]-", host_name):
-                         module.fail_json(msg='Ordered hostname is not supported, If you want to add an ordered '
-                                              'suffix to the hostname, you can set unique_suffix to True')
-                     new_instances = run_instance(module, ecs, count - len(instances))
-
-From 6282147352879be72474cd7194ce5ddccf248677 Mon Sep 17 00:00:00 2001
-From: Yang Liu <liuyangc3@gmail.com>
-Date: Fri, 19 Jun 2020 19:43:43 +0800
-Subject: [PATCH 2/4] fix public ip
-
----
- lib/ansible/modules/cloud/alicloud/ali_instance.py | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
-
-diff --git a/lib/ansible/modules/cloud/alicloud/ali_instance.py b/lib/ansible/modules/cloud/alicloud/ali_instance.py
-index d33c671..35096de 100644
 --- a/lib/ansible/modules/cloud/alicloud/ali_instance.py
 +++ b/lib/ansible/modules/cloud/alicloud/ali_instance.py
 @@ -610,6 +610,7 @@
@@ -42,29 +8,35 @@ index d33c671..35096de 100644
  import time
  import traceback
  from ansible.module_utils.basic import AnsibleModule, missing_required_lib
-@@ -667,6 +668,11 @@ def run_instance(module, ecs, exact_count):
+@@ -667,6 +668,17 @@
      spot_price_limit = module.params['spot_price_limit']
      spot_strategy = module.params['spot_strategy']
      unique_suffix = module.params['unique_suffix']
 +    count_tag = module.params['count_tag']
 +    tags = module.params['tags']
 +
-+    merged_tags = tags.update(literal_eval(count_tag))
++    merged_tags = {}
++    if tags:
++        merged_tags = tags
++
++    if literal_eval(count_tag):
++        merged_tags.update(literal_eval(count_tag))
 +
      # check whether the required parameter passed or not
      if not image_id:
          module.fail_json(msg='image_id is required for new instance')
-@@ -691,7 +697,8 @@ def run_instance(module, ecs, exact_count):
+@@ -691,7 +703,9 @@
                                        amount=exact_count, instance_charge_type=instance_charge_type, period=period, period_unit="Month",
                                        auto_renew=auto_renew, auto_renew_period=auto_renew_period, key_pair_name=key_name,
                                        user_data=user_data, client_token=client_token, ram_role_name=ram_role_name,
 -                                      spot_price_limit=spot_price_limit, spot_strategy=spot_strategy, unique_suffix=unique_suffix)
 +                                      spot_price_limit=spot_price_limit, spot_strategy=spot_strategy, unique_suffix=unique_suffix,
 +                                      tags=merged_tags)
++
  
      except Exception as e:
          module.fail_json(msg='Unable to create instance, error: {0}'.format(e))
-@@ -830,7 +837,7 @@ def main():
+@@ -830,7 +844,7 @@
              module.fail_json(msg="There are no instances in our record based on instance_ids {0}. "
                                   "Please check it and try again.".format(instance_ids))
      elif count_tag:
@@ -73,7 +45,7 @@ index d33c671..35096de 100644
      elif instance_name:
          instances = ecs.describe_instances(zone_id=zone_id, instance_name=instance_name)
  
-@@ -853,7 +860,7 @@ def main():
+@@ -853,7 +867,7 @@
          except Exception as e:
              module.fail_json(msg='Delete instance got an error: {0}'.format(e))
  
@@ -82,49 +54,16 @@ index d33c671..35096de 100644
          module.fail_json(msg="'max_bandwidth_out' should be greater than 0 when 'allocate_public_ip' is True.")
      if not module.params['allocate_public_ip']:
          module.params['max_bandwidth_out'] = 0
-
-From 66817356490ccf2cefbf8c64c16ea3301ffe2e41 Mon Sep 17 00:00:00 2001
-From: Yang Liu <liuyangc3@gmail.com>
-Date: Fri, 19 Jun 2020 20:13:31 +0800
-Subject: [PATCH 3/4] fix tags
-
----
- lib/ansible/modules/cloud/alicloud/ali_instance.py | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/lib/ansible/modules/cloud/alicloud/ali_instance.py b/lib/ansible/modules/cloud/alicloud/ali_instance.py
-index 35096de..1df81ba 100644
---- a/lib/ansible/modules/cloud/alicloud/ali_instance.py
-+++ b/lib/ansible/modules/cloud/alicloud/ali_instance.py
-@@ -671,7 +671,12 @@ def run_instance(module, ecs, exact_count):
-     count_tag = module.params['count_tag']
-     tags = module.params['tags']
- 
--    merged_tags = tags.update(literal_eval(count_tag))
-+    merged_tags = {}
-+    if tags:
-+        merged_tags = tags
-+
-+    if literal_eval(count_tag):
-+        merged_tags.update(literal_eval(count_tag))
- 
-     # check whether the required parameter passed or not
-     if not image_id:
-
-From 76f77264fa7a978b0a5fbad34139e15862b0048f Mon Sep 17 00:00:00 2001
-From: Yang Liu <liuyangc3@gmail.com>
-Date: Fri, 19 Jun 2020 20:43:22 +0800
-Subject: [PATCH 4/4] fix module return instances always is []
-
----
- .../modules/cloud/alicloud/ali_instance.py     | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
-
-diff --git a/lib/ansible/modules/cloud/alicloud/ali_instance.py b/lib/ansible/modules/cloud/alicloud/ali_instance.py
-index 1df81ba..ed1eb0d 100644
---- a/lib/ansible/modules/cloud/alicloud/ali_instance.py
-+++ b/lib/ansible/modules/cloud/alicloud/ali_instance.py
-@@ -914,16 +914,16 @@ def main():
+@@ -874,7 +888,7 @@
+                     instances.pop(len(instances) - 1)
+             else:
+                 try:
+-                    if re.search(r"-\[\d+,\d+\]-", host_name):
++                    if host_name and re.search(r"-\[\d+,\d+\]-", host_name):
+                         module.fail_json(msg='Ordered hostname is not supported, If you want to add an ordered '
+                                              'suffix to the hostname, you can set unique_suffix to True')
+                     new_instances = run_instance(module, ecs, count - len(instances))
+@@ -902,16 +916,16 @@
          # Security Group join/leave ends here
  
          # Attach/Detach key pair
@@ -145,7 +84,7 @@ index 1df81ba..ed1eb0d 100644
  
          # Modify instance attribute
          for inst in instances:
-@@ -933,12 +933,12 @@ def main():
+@@ -921,12 +935,12 @@
                  ids.append(inst.id)
  
          # Modify instance charge type
@@ -162,7 +101,7 @@ index 1df81ba..ed1eb0d 100644
                        "include_data_disks": module.params['include_data_disks'], "dry_run": module.params['dry_run'],
                        "auto_pay": True}
              if instance_charge_type == 'PrePaid':
-@@ -947,7 +947,7 @@ def main():
+@@ -935,7 +949,7 @@
  
              if ecs.modify_instance_charge_type(**params):
                  changed = True

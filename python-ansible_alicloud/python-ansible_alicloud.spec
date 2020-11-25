@@ -13,7 +13,7 @@ URL:            https://github.com/alibaba/ansible-provider/tree/master/lib/ansi
 Source0:        %{pypi_source}
 # Patch1 contains 4 commits: 1cdc6d91201d8cf76e05dc7eca2a6f79454c7ae9, 6282147352879be72474cd7194ce5ddccf248677,
 #                            66817356490ccf2cefbf8c64c16ea3301ffe2e41, 76f77264fa7a978b0a5fbad34139e15862b0048f
-Patch1:         https://patch-diff.githubusercontent.com/raw/alibaba/alibaba.alicloud/pull/279.patch
+Patch1:         https://raw.githubusercontent.com/BOPOHA/aliyun-python-sdk-spec/master/python-ansible_alicloud/279.merged.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
