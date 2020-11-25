@@ -1,0 +1,69 @@
+From cad7c66711e89e71b1ae486e7c53c6d14563c18a Mon Sep 17 00:00:00 2001
+From: Pavlos Tzianos <pavlos.tzianos@gmail.com>
+Date: Sat, 29 Dec 2018 14:54:07 +0100
+Subject: [PATCH] Parse correctly header of RabbitMQ 3.7.9 responses
+
+---
+ .../messaging/rabbitmq/rabbitmq_user.py       |  8 +++---
+ .../messaging/rabbitmq/test_rabbimq_user.py   | 27 +++++++++++++++++++
+ 2 files changed, 32 insertions(+), 3 deletions(-)
+
+diff --git a/lib/ansible/modules/messaging/rabbitmq/rabbitmq_user.py b/lib/ansible/modules/messaging/rabbitmq/rabbitmq_user.py
+index 5be2339e2fe39..7b76c76a48328 100644
+--- a/lib/ansible/modules/messaging/rabbitmq/rabbitmq_user.py
++++ b/lib/ansible/modules/messaging/rabbitmq/rabbitmq_user.py
+@@ -174,11 +174,13 @@ def get(self):
+ 
+     def _get_permissions(self):
+         """Get permissions of the user from RabbitMQ."""
+-        perms_out = [perm for perm in self._exec(['list_user_permissions', self.username], True) if perm.strip()]
++        perms_out = [perm.split('\t') for perm in self._exec(['list_user_permissions', self.username], True)
++                     if perm.strip()]
++        # Filter out headers from the output of the command
++        perms_out = [perm for perm in perms_out if perm != ["vhost", "configure", "write", "read"]]
+ 
+         perms_list = list()
+-        for perm in perms_out:
+-            vhost, configure_priv, write_priv, read_priv = perm.split('\t')
++        for vhost, configure_priv, write_priv, read_priv in perms_out:
+             if not self.bulk_permissions:
+                 if vhost == self.permissions[0]['vhost']:
+                     perms_list.append(dict(vhost=vhost, configure_priv=configure_priv,
+diff --git a/test/units/modules/messaging/rabbitmq/test_rabbimq_user.py b/test/units/modules/messaging/rabbitmq/test_rabbimq_user.py
+index 269ffef6fc458..922695515dd1c 100644
+--- a/test/units/modules/messaging/rabbitmq/test_rabbimq_user.py
++++ b/test/units/modules/messaging/rabbitmq/test_rabbimq_user.py
+@@ -84,6 +84,33 @@ def test_same_permissions_not_changing(self, has_tags_modifications, _get_permis
+             self._assert(e, 'changed', False)
+             self._assert(e, 'state', 'present')
+ 
++    @patch('ansible.module_utils.basic.AnsibleModule.get_bin_path')
++    @patch('ansible.modules.messaging.rabbitmq.rabbitmq_user.RabbitMqUser._exec')
++    @patch('ansible.modules.messaging.rabbitmq.rabbitmq_user.RabbitMqUser.has_tags_modifications')
++    def test_same_permissions_parsed_and_not_changed(self, has_tags_modifications, _exec, get_bin_path):
++        """Test that user permissions are passed correctly.
++
++        This test is aimed to ensure that Ansible can parse the response of version >= RabbitMQ v3.7.9
++        where a response looks like this:
++        > rabbitmqctl list_user_permissions admin
++        vhost   configure    write     read
++          /        ^$         ^$        ^$
++        """
++        set_module_args({
++            'user': 'someuser',
++            'password': 'somepassword',
++            'state': 'present',
++            'permissions': [{'vhost': '/', 'configure_priv': '.*', 'write_priv': '.*', 'read_priv': '.*'}],
++        })
++        _exec.side_effect = [['someuser\t[]'], ['vhost\tconfigure\twrite\tread', '/\t.*\t.*\t.*']]
++        get_bin_path.return_value = '/rabbitmqctl'
++        has_tags_modifications.return_value = False
++        try:
++            self.module.main()
++        except AnsibleExitJson as e:
++            self._assert(e, 'changed', False)
++            self._assert(e, 'state', 'present')
++
+     @patch('ansible.module_utils.basic.AnsibleModule.get_bin_path')
+     @patch('ansible.modules.messaging.rabbitmq.rabbitmq_user.RabbitMqUser._exec')
+     @patch('ansible.modules.messaging.rabbitmq.rabbitmq_user.RabbitMqUser._get_permissions')

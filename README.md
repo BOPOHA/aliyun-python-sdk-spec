@@ -5,6 +5,12 @@ dnf copr enable vorona/aliyun-python-sdk
 dnf install python3-ansible_alicloud
 ```
 
+# Create SPECs
+
+```
+pyp2rpm ansible_alicloud -v 1.19.0 -o fedora -b 3 > python-ansible_alicloud/python-ansible_alicloud.spec 
+```
+
 # BUILD
 On any COPR do `New build` and paste urls to `From URLs`:
 ```text
