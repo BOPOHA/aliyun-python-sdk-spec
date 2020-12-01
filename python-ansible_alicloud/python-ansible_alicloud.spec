@@ -5,7 +5,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.19.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Ansible provider for Alicloud
 
 License:        MIT
