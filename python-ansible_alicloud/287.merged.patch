@@ -1,21 +1,5 @@
---- a/ansible/modules/cloud/alicloud/ali_disk.py
-+++ b/ansible/modules/cloud/alicloud/ali_disk.py
-@@ -203,6 +203,7 @@
- import time
- from ansible.module_utils.basic import AnsibleModule
- from ansible.module_utils.alicloud_ecs import ecs_argument_spec, ecs_connect
-+import sys
-
- HAS_FOOTMARK = False
-
-@@ -222,7 +223,6 @@
-     :param disk_id:  ID of Disk to Describe
-     :return: return id, status and object of disk
-     """
--
-     return {'id': disk.disk_id,
-             'category': disk.category,
-             'size': disk.size,
+--- a/lib/ansible/modules/cloud/alicloud/ali_disk.py
++++ b/lib/ansible/modules/cloud/alicloud/ali_disk.py
 @@ -234,7 +234,9 @@
              'description': disk.description,
              'status': disk.status,
