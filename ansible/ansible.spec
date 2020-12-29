@@ -10,7 +10,7 @@
 # Disable tests on f29/f30 and epel8 for now.
 # epel8 is missing 2 required packages.
 # fedora29 and fedora30 have too old pytest
-%if 0%{?fedora} < 31 || 0%{?rhel} >= 8 || 0%{?fedora} == 33 
+%if 0%{?fedora} < 31 || 0%{?rhel} >= 8 || 0%{?fedora} >= 33 
 %global with_tests 0
 %else
 %global with_tests 1
@@ -19,7 +19,7 @@
 Name: ansible
 Summary: SSH-based configuration management, deployment, and task execution system
 Version: 2.9.15
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 License: GPLv3+
 Source0: https://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
