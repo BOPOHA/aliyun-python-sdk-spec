@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        1.20.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Python interface to Aliyun Web Services
 
 License:        MIT
